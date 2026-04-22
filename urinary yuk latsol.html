@@ -1,0 +1,1467 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulator QUIZ Yuk Latsol 21</title>
+  <style>
+    :root {
+      --bg1: #fff7ed;
+      --bg2: #eff6ff;
+      --card: rgba(255, 255, 255, 0.92);
+      --text: #1f2937;
+      --muted: #6b7280;
+      --primary: #f97316;
+      --primary-2: #ea580c;
+      --secondary: #0ea5e9;
+      --secondary-2: #0284c7;
+      --back-1: #64748b;
+      --back-2: #475569;
+      --success-bg: #dcfce7;
+      --success-border: #22c55e;
+      --wrong-bg: #fee2e2;
+      --wrong-border: #ef4444;
+      --explain-bg: #fef3c7;
+      --shadow: 0 20px 45px rgba(0, 0, 0, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, #fde68a 0%, transparent 28%),
+        radial-gradient(circle at top right, #bfdbfe 0%, transparent 30%),
+        linear-gradient(135deg, var(--bg1), var(--bg2));
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    .container {
+      max-width: 920px;
+      margin: 24px auto;
+      background: var(--card);
+      backdrop-filter: blur(10px);
+      border-radius: 24px;
+      padding: 28px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255, 255, 255, 0.65);
+    }
+
+    .home {
+      text-align: center;
+      padding: 90px 24px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 8px 16px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #f97316, #fb7185);
+      color: white;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: 38px;
+      line-height: 1.2;
+    }
+
+    h2, h3 {
+      margin-top: 0;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 18px;
+      margin-bottom: 28px;
+    }
+
+    .go-btn,
+    .next-btn,
+    .restart-btn,
+    .back-btn {
+      border: none;
+      color: white;
+      cursor: pointer;
+      border-radius: 14px;
+      padding: 14px 26px;
+      font-size: 18px;
+      font-weight: 700;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+    }
+
+    .go-btn {
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      box-shadow: 0 12px 28px rgba(249, 115, 22, 0.35);
+    }
+
+    .next-btn,
+    .restart-btn {
+      background: linear-gradient(135deg, var(--secondary), var(--secondary-2));
+      box-shadow: 0 12px 28px rgba(14, 165, 233, 0.28);
+    }
+
+    .back-btn {
+      background: linear-gradient(135deg, var(--back-1), var(--back-2));
+      box-shadow: 0 12px 28px rgba(71, 85, 105, 0.28);
+    }
+
+    .go-btn:hover,
+    .next-btn:hover,
+    .restart-btn:hover,
+    .back-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .meta-chip {
+      background: linear-gradient(135deg, #fff7ed, #ffedd5);
+      border: 1px solid #fdba74;
+      padding: 8px 14px;
+      border-radius: 999px;
+    }
+
+    #question {
+      font-size: 24px;
+      line-height: 1.45;
+      margin-bottom: 18px;
+    }
+
+    .options {
+      display: grid;
+      gap: 12px;
+    }
+
+    .options label {
+      display: block;
+      padding: 16px 18px;
+      border: 2px solid #e5e7eb;
+      border-radius: 16px;
+      cursor: pointer;
+      background: white;
+      transition: all 0.18s ease;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    .options label:hover {
+      border-color: #7dd3fc;
+      transform: translateY(-1px);
+      box-shadow: 0 10px 22px rgba(14, 165, 233, 0.1);
+    }
+
+    .options input {
+      margin-right: 10px;
+      transform: scale(1.1);
+      accent-color: var(--secondary);
+    }
+
+    .correct {
+      background: var(--success-bg) !important;
+      border-color: var(--success-border) !important;
+    }
+
+    .wrong {
+      background: var(--wrong-bg) !important;
+      border-color: var(--wrong-border) !important;
+    }
+
+    .explain {
+      margin-top: 18px;
+      padding: 16px 18px;
+      border-radius: 16px;
+      background: var(--explain-bg);
+      border-left: 6px solid #f59e0b;
+      line-height: 1.6;
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+
+    .result {
+      text-align: center;
+      padding: 80px 24px;
+    }
+
+    .result-box {
+      background: linear-gradient(135deg, #eff6ff, #fdf2f8);
+      border: 1px solid #c4b5fd;
+      border-radius: 22px;
+      padding: 28px;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    .score-number {
+      font-size: 44px;
+      font-weight: 800;
+      margin: 14px 0;
+      color: #7c3aed;
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 14px;
+      }
+
+      .container {
+        padding: 20px;
+        border-radius: 20px;
+      }
+
+      .home {
+        padding: 60px 14px;
+      }
+
+      h1 {
+        font-size: 28px;
+      }
+
+      #question {
+        font-size: 20px;
+      }
+
+      .go-btn,
+      .next-btn,
+      .restart-btn,
+      .back-btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="home" class="container home">
+    <div class="badge">Simulator CBT</div>
+    <h1>Yuk Latsol 21</h1>
+    <div class="subtitle">2021 · Urinary System</div>
+    <button class="go-btn" type="button" id="startBtn">START CBT</button>
+  </div>
+
+  <div id="quizContainer" class="container" style="display:none;">
+    <div class="meta">
+      <div id="meta" class="meta-chip"></div>
+      <div id="scoreInfo" class="meta-chip"></div>
+      <div id="timerInfo" class="meta-chip"></div>
+    </div>
+
+    <h3 id="question"></h3>
+    <div id="options" class="options"></div>
+    <div id="explain" class="explain" style="display:none;"></div>
+
+    <div class="actions">
+      <button class="back-btn" type="button" id="backBtn">Back</button>
+      <button class="next-btn" type="button" id="nextBtn">Next</button>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+ {
+    q: "1. Diantara kedua ginjal vena cava inferior terletak sebelah kiri aorta abdominalis",
+    options: ["a. benar", "b. salah"],
+    answer: 1,
+    explain: "Vena cava inferior : berada di sebelah kanan aorta abdominalis"
+  },
+  {
+    q: "2. Bagian cranial ureter lebih sempit dibandingkan bagian lainnya [QUIZ]",
+    options: ["a. salah", "b. benar"],
+    answer: 1,
+    explain: "Kranial : bagian atas\n- Paling sempit adalah bagian ureteropelvic junction"
+  },
+  {
+    q: "3. Pada polus cranial ren dijumpai glandula adrenal [QUIZ]",
+    options: ["a. salah", "b. benar"],
+    answer: 1,
+    explain: "Polus cranialis ren : bagian atas"
+  },
+  {
+    q: "4. Bagian dari saluran sistem urinaria sebagai penampung sementara urine yang dibentuk ginjal adalah: [2019]",
+    options: [
+      "a. vesicula seminalis",
+      "b. vesica urinaria",
+      "c. pelvis renalis",
+      "d. ansa of henle.",
+      "e. urethra"
+    ],
+    answer: 1,
+    explain: "Penampung sementara urine adalah vesica urinaria."
+  },
+  {
+    q: "5. Seorang pria muda mengajak teman ceweknya yang mengeluhkan nyeri saat kencing. Setelah anamnesis dan prosedur pemeriksaan dilakukan dokter menyimpulkan sebagai \"honeymoon cystitis\". Sistem urinaria terdiri dari: 1. Urethra, 2. Ureter, 3, vesica urinaris, 4. Ginjal. Urutan struktur yang dilewati adalah sebagai berikut: [2019]",
+    options: [
+      "a. 1-3-4-2",
+      "b. 4-2-3-1",
+      "c. 4-3-2-1",
+      "d. 1-2-3-4",
+      "e. 1-2-4-3"
+    ],
+    answer: 1,
+    explain: "Urutan aliran urine: ginjal → ureter → vesica urinaria → urethra."
+  },
+  {
+    q: "6. Mana dari struktur berikut yang paling dekat dengan ginjal kiri: [2018]",
+    options: [
+      "a. Caput pankreas",
+      "b. Ujung/ekor pankreas",
+      "c. Hepar",
+      "d. Duodenum",
+      "e. Semua benar"
+    ],
+    answer: 1,
+    explain: "Ginjal kiri berdekatan dengan ekor pankreas."
+  },
+  {
+    q: "7. pernyataan tentang vesika urinaria yang benar: [2016][2017][2018]",
+    options: [
+      "a. berdinding otot bergaris → otot lurik",
+      "b. bagian yang disebut trigone terdapat pada permukaan luar dinding vesika urinaria",
+      "c. dilayani oleh saraf parasimpatik → m.destrusor",
+      "d. trigone hanya dibatasi oleh Muara kedua ureter",
+      "e. uretra keluar pada bagian Apex"
+    ],
+    answer: 2,
+    explain: "Saraf parasimpatis mempersarafi m. detrusor."
+  },
+  {
+    q: "8. Pasien datang dengan keluhan nyeri pinggang kiri menjalar ke tepi kiri abdomen sampai ke testis kiri. Anda curiga pasien mengalami ureter colic. Pernyataan tentang ureter yang benar: [2016][2017][2018]",
+    options: [
+      "a. Berakhir di urethra → urinary bladder",
+      "b. Masing-masing ginjal memiliki 2 ureter → satu",
+      "c. Didalamnya terdapat nephron → ginjal",
+      "d. Merupakan kelanjutan pelvis renalis/piala ginjal",
+      "e. Berjalan di sebelah dorsal ginjal"
+    ],
+    answer: 3,
+    explain: "Ureter merupakan kelanjutan pelvis renalis/piala ginjal."
+  },
+  {
+    q: "9. Yang ditunjuk pada gambar adalah cavitas di dalam ren. Cavitas ini diisi oleh struktur-struktur yang keluar dan masuk ren. Apa nama struktur yang letaknya paling posterior pada cavitas ini? [2020] The image below shows a cavity within the kidney. This cavity is filled by structures that enter and leave the kidney. What is the name of the structure that located mostly posterior in this cavity?",
+    options: [
+      "a. Nerves & lymphatic vessels",
+      "b. Cabang ketiga dari arteria renalis (Third branch of the renal artery)",
+      "c. Vena renalis (Renal vein)",
+      "d. Dua cabang arteri renalis (Two branches of the renal artery)",
+      "e. Pelvis renalis (Renal pelvis)"
+    ],
+    answer: 1,
+    explain: "Urutan sinus renalis dari anterior ke posterior: vena renalis → dua cabang arteri renalis → pelvis renalis → cabang ketiga arteria renalis."
+  },
+  {
+    q: "10.Apa nama struktur yang ditunjuk oleh panah?[2020] What is the name of the structure pointed to by the arrow? Aspectus ventralis dari penis",
+    options: [
+      "a. Membran perinei",
+      "b. Musc. bulbocavernosus",
+      "c. Musc. bulbospongisus",
+      "d. Musc. ischiocavernosus",
+      "e. Musc. ischiospongiosus"
+    ],
+    answer: 2,
+    explain: "Pada aspectus ventralis penis, struktur yang biasanya tampak di garis tengah adalah m. bulbospongiosus."
+  },
+  {
+    q: "11. Pasien dewasa laki-laki pekerjaan sopir, datang dengan keluhan sakit pinggang, dengan riwayat banyak duduk dan kurang minum. Anda curiga kalau hal ini terjadi karena masalah otot atau dari ginjal. Manakah yang tepat untuk ginjal kiri: [2018]",
+    options: [
+      "a. dari bagian median keluar urethra → ureter",
+      "b. berada di bagian depan rongga abdomen",
+      "c. posisinya lebih rendah dari ginjal kanan → lebih tinggi",
+      "d. di polus inferior dijumpai kelenjar adrenal → superior",
+      "e. letaknya dekat limpa/lien"
+    ],
+    answer: 4,
+    explain: "Ginjal kiri letaknya dekat limpa/lien."
+  },
+  {
+    q: "1. Distal tubule yang membentuk juxtaglomerular apparatus adalah: [QUIZ]",
+    options: [
+      "a. Sel jukstaglomerular",
+      "b. Sel mesangial",
+      "c. Sel podosit",
+      "d. Sel endotel",
+      "e. Sel makula densa"
+    ],
+    answer: 4,
+    explain: "Bagian distal tubule yang membentuk juxtaglomerular apparatus adalah makula densa."
+  },
+  {
+    q: "2. Nefron terdiri atas: [QUIZ]",
+    options: [
+      "a. Renal corpuscle dan tubular portion",
+      "b. Glomerulus dan tubular portion",
+      "c. Bowman's capsule dan proximal tubule",
+      "d. Glomerulus dan bowman's capsule",
+      "e. Renal corpuscle dan bowman's capsule"
+    ],
+    answer: 0,
+    explain: "Nefron terdiri atas renal corpuscle dan tubular portion."
+  },
+  {
+    q: "3. Struktur yang terdapat pada medulla ginjal adalah: [QUIZ]",
+    options: [
+      "a. Kapsul ginjal",
+      "b. Renal pyramids",
+      "c. Renal corpuscle",
+      "d. Convulated tubule",
+      "e. Medullary ray"
+    ],
+    answer: 1,
+    explain: "Struktur yang terdapat pada medulla ginjal adalah renal pyramids."
+  },
+  {
+    q: "4. Prosesus sekunder sel podosit akan membentuk: [QUIZ",
+    options: [
+      "a. Kapsula bowman",
+      "b. Glomerulus",
+      "c. Pedikel",
+      "d. Basal lamina",
+      "e. Prosesus Primer"
+    ],
+    answer: 2,
+    explain: "Prosesus sekunder podosit membentuk pedikel."
+  },
+  {
+    q: "5. Unit fungsional terkecil dari ginjal adalah [QUIZ]",
+    options: [
+      "a. Glomerulus",
+      "b. Nefron",
+      "c. Loop Henle",
+      "d. Tubulus distalis",
+      "e. Tubulus proksimalis"
+    ],
+    answer: 1,
+    explain: "Unit fungsional terkecil ginjal adalah nefron."
+  },
+  {
+    q: "6. Struktur yang memiliki regio plaque dan interplaque adalah: [QUIZ]",
+    options: [
+      "a. Ginjal",
+      "b. Pelvis renalis",
+      "c. Urethra",
+      "d. Bladder",
+      "e. Ureter"
+    ],
+    answer: 4,
+    explain: "Regio plaque dan interplaque terdapat pada ureter."
+  },
+  {
+    q: "7. Manakah struktur glomerulus yang benar pada pernyataan di bawah ini? [2020] Which statement is true regarding glomerulus structure:",
+    options: [
+      "a. Urinary pole adalah tempat keluar masuknya afferent dan efferent arteriole",
+      "b. Sel podocyte menyusun visceral layer",
+      "c. Glomerulus menyusun renal corpuscle bersama podocyte",
+      "d. Bowman's space merupakan bagian dari glomerulus",
+      "e. Parietal layer tersusun atas epitel kuboid"
+    ],
+    answer: 1,
+    explain: "Opsi A harusnya vascular pole. Kalo urinary pole itu tempat keluar masuknua urin\nOpsi C, yg menyusun renal corpuscle itu glomerulus dan kapsula bowman\nOpsi D, bowman space adalah ruang antara parietal dan visceral layer capsula bowman\nOpsi E, parietal layer disusun oleh squamous epithelium (epitel selapis pipih), matriksnya basal lamina"
+  },
+  {
+    q: "8. Perbedaan tubulus proximal dan distal adalah: [2020] The difference of proximal and distal tubule is:",
+    options: [
+      "a. Sitoplasma sel pada proximal tubule lebih eosinofilik daripada distal tubule",
+      "b. Distal tubule lebih panjang daripada proximal tubule",
+      "c. Mikrovili proximal tubule lebih pendek daripada distal tubule → Proximal lebih panjang",
+      "d. Macula densa merupakan bagian dari proximal tubule → Distal",
+      "e. Lumen distal tubule lebih sempit daripada proximal tubule"
+    ],
+    answer: 0,
+    explain: "Proksimal\n- Mikrofili panjang\n- Lumen sempit\n- Lebih tinggi\n- Eosinofilik (+) -> ada mitokondria (ATP)\n- Makula densa (-)\nDistal\n- Mikrofili pendek\n- Lumen lebar\n- Lebih pendek\n- Eosionofilik (-)\n- Makula densa (+)"
+  },
+  {
+    q: "9. Ginjal mempunyai fungsi ekskresi dan fungsi endokrin. Dibawah ini yang termasuk fungsi endokrin adalah: [2019]",
+    options: [
+      "a. Filtrasi cairan → fungsi ekskretori",
+      "b. Mengatur tekanan darah",
+      "c. Mengatur kadar natrium urin → fungsi regulasi",
+      "d. Mengatur osmolaritas urin → fungsi regulasi",
+      "e. Reabsorpsi glukosa"
+    ],
+    answer: 1,
+    explain: "• Fungsi hormonal : menghasilkan renin, angiotensin, bradikinin, prostaglandin, eritropoetin, vit. D\n• RAAS : berperan dalam mengatur tekanan darah manusia\n◦ Tekanan darah turun – macula densa akan memproduksi renin dan hati akan memproduksi angiotensinogen.\n◦ Renin akan mengubah angiotensinogen menjadi angiotensin I.\n◦ Angiotensin I akan diubah oleh ACE (diproduksi paru-paru) menjadi angiotensin II\n◦ Angiotensin II mempengaruhi hipotalamus hipofisis untuk produksi aldosterone – vasokontriksi dan aktivasi retensi Na dan air – tekanan darah naik"
+  },
+  {
+    q: "10.Struktur yang terdapat pada korteks ginjal adalah: [2018] What structure is including in renal cortex?",
+    options: [
+      "a. Cortical column",
+      "b. Renal lobe",
+      "c. Area Cribrosa",
+      "d. Convulated tubule",
+      "e. Renal pyramids"
+    ],
+    answer: 3,
+    explain: "Korteks: Renal corpuscle, tubule convulated/tubule portion/tubulus kontortus, medullary rays (tubulus kolektivus yang ada di korteks)\nMedulla: Renal piramid, cortical column (ada diantara renal piramid)"
+  },
+  {
+    q: "11.Visceral layer pada renal corpuscle dilapisi oleh sel : [2018] Visceral layer of renal corpuscle is lined by cells :",
+    options: [
+      "a. Principle cell",
+      "b. Intercalated cell",
+      "c. Squamous epithelial",
+      "d. Podocyte",
+      "e. Cuboid epithelial"
+    ],
+    answer: 3,
+    explain: "Parietal layer → squamous epithelial\nVisceral layer → podocyte (yang kuning)\nTubulus kolektivus → cuboid epithelial, ini ada 2 jenis: intercalated dan principle"
+  },
+  {
+    q: "12. Urine tidak dapat regurgutasi dari bladder/vesica urinaria ke ureter karena adanya: [2020] Urine could not regurgitated from bladder/ vesica urinary because:",
+    options: [
+      "a. Gaya gravitasi",
+      "b. Internal sphincter muscle",
+      "c. Lapisan otot ureter",
+      "d. Lapisan fibrus ureter",
+      "e. Mukosa ureter yang membentuk valve-like flap"
+    ],
+    answer: 4,
+    explain: "Urine tidak regurgitasi karena mukosa ureter membentuk valve-like flap."
+  },
+  {
+    q: "13.Struktur yg trdpt pd medulla ginjal adalah [2016]",
+    options: [
+      "a. Renal corpuscle",
+      "b. Convulated tubule",
+      "c. Medullary rays",
+      "d. Renal piramids",
+      "e. Renal lobule"
+    ],
+    answer: 3,
+    explain: "Korteks: Renal corpuscle, tubule convulated/tubule portion/tubulus kontortus, medullary rays (tubulus kolektivus yang ada di korteks)\nMedulla: Renal piramid, cortical column (ada diantara renal piramid)"
+  },
+  {
+    q: "14.Apakah ciri khas struktur mukosa urethra pars prostatica yang membedakannya dengan ureter dan bladder? [2017] What is the characteristic of prostatic urethra mucosa that distinguishes it from ureter and bladder?)",
+    options: [
+      "a. Transtitional epithelial",
+      "b. Muscle layer",
+      "c. columnar epithelial",
+      "d. Fibrous connective tissue",
+      "e. Gland of littre"
+    ],
+    answer: 2,
+    explain: "Mukosa urethra pars prostatica dibedakan oleh epitel kolumnar."
+  },
+  {
+    q: "1. Pada keadaan metabolic asidosis, dalam nephron terjadi proses: [2019][2020] In metabolic acidosis condition there is a process in nephron:",
+    options: [
+      "a. Peningkatan reabsorpsi bikarbonat di bagian tipis loop Henle (Increased reabsorption of becarbonate in thin limb of loop of Henle) → thick ascending part of loop henle",
+      "b. Penurunan sekresi ion hydrogen ke dalam cairan tubulus (Decreased secretion of hydrogen ion into renal tubular fluid) → Peningkatan sekresi ion hydorgen → Peningkatan sekresi H+ kan mengurangi asam jadi perlu dikeluarin ke cairan tubulus",
+      "c. Penurunan filtrasi bikarbonant di glomerulus (Decreased filtration of becarbonate ion in glomerulus)",
+      "d. Peningkatan filtrasi bikarbonat di glomerulus (Increased filtration of becarbonate ion in glomerulus)",
+      "e. Peningkatan rasio bikarbonat-ion hydrogen dalam cairan tubulus (Increased in the ratio of becarbonate to hydrogen ions in renal tubular fluid)"
+    ],
+    answer: 1,
+    explain: "Pada catatan asli, opsi yang sesuai seharusnya adalah peningkatan sekresi H+ ke cairan tubulus. Teks opsi dipertahankan sesuai materi."
+  },
+  {
+    q: "2. Otoregulasi aliran darah ginjal ke glomerulus terkait dengan hal di bawah: [2017][2018][2019][2020] Autoregulation of renal blood flow in glomerulus related to:",
+    options: [
+      "a. Pengeluaran hormone aldosteron oleh pengaruh langsung renin (Aldosterone hormone release, direct influence by renin) → tidak dipengaruhi langsung. Aldosterone disekresikan dari hipotalamus hipofisis atas rangsangan angiotensin II",
+      "b. Pengeluaran hormone renin oleh sel macula densa dan juxta glomerular (Renin hormone excretion from cell of macula densa and juxta glomerular)",
+      "c. Pengeluaran renin yang akan mengubah angiotensinogen menjadi angiotensin (Renin will convert the angiotensinogen to angiotensin) → spesifik angiotensin I",
+      "d. Kemampuan otot arteriol menahan regangan saat peningkatan tekanan arterial (Ability of arteriole muscle to resist stretching during increased arterial pressure)",
+      "e. Pengeluaran hormone paracrine oleh sel-sel arteriole afferent (Paracrine hormone excretion from arteriole afferent cell)"
+    ],
+    answer: 3,
+    explain: "Autoregulasi aliran darah ginjal terkait kemampuan otot arteriol menahan regangan saat tekanan arterial meningkat."
+  },
+  {
+    q: "3. Glukosa direabsorpsi bersama dengan Na+ dari lumen tubulus ke dalam sel tubulus proksimal. Proses ini disebut dengan [2016][2018][2019] The glucose reabsorption with Na+ from tubular lumen to proximal tubule cell",
+    options: [
+      "a. Transport aktif primer → transport natrium dengan Na-K pump",
+      "b. Transport aktif",
+      "c. Facilitated diffusion carrier",
+      "d. Transport pasit.",
+      "e. Transport aktif sekunder → Menurut ku ini karna glukosa sama asam amino direabsorp dgn berapsangan sama Na melalui secondary active transpor(gak perlu atp krna ngikut Na) (catatan K Leo)"
+    ],
+    answer: 4,
+    explain: "Glukosa direabsorpsi bersama Na+ melalui transport aktif sekunder."
+  },
+  {
+    q: "4. Pernyataan yang benar terkait proses Reabsorpsi Na+ di tubulus proksimalis adalah [2017][2019] The correct statement regarding Natrium reabsorption in proximal tubule is:",
+    options: [
+      "a. Memerlukan energy ATP →karena transport aktif lewat NA-K Pump",
+      "b. Berdasarkan perbedaan tekanan interstitial",
+      "c. Berdasarkan perbedaan tekanan intraseluler",
+      "d. Dengan cara osmosis biasa",
+      "e. Berdasarkan perbedaan electrochemical gradient"
+    ],
+    answer: 0,
+    explain: "Reabsorpsi Na+ di tubulus proksimalis memerlukan energi ATP melalui pompa Na-K."
+  },
+  {
+    q: "5. pada Loop henle pars descenden terjadi hal berikut: [2016][2018]",
+    options: [
+      "a. reabsorbsi glukosa → tubulus proksimal",
+      "b. sekresi H2O",
+      "c. reabsorbsi CI",
+      "d. sekresi CL",
+      "e. reabsorpsi H2O"
+    ],
+    answer: 4,
+    explain: "Pada loop Henle pars descenden terjadi reabsorpsi H2O."
+  },
+  {
+    q: "6. Dalam sistem sirkulasi jumlah darah yang masuk ke ginjal per hari diperkirakan [QUIZ]",
+    options: [
+      "a. 10 liter",
+      "b. 100 liter",
+      "c. 180 liter",
+      "d. 5 liter",
+      "e. 125 liter"
+    ],
+    answer: 2,
+    explain: "Sesuai pilihan yang tersedia pada materi, jawaban yang digunakan adalah 180 liter."
+  },
+  {
+    q: "7. Hormon anti diureti (ADH) berperan dalam mekanisme pembentukan urine encer atau urine pekat . ADH bekerja pada sel-sel tubulus segmen [QUIZ]",
+    options: [
+      "a. Late distal tubule",
+      "b. Distal dan cortical collecting duct",
+      "c. Cortical collecting duct",
+      "d. Early distal tubule",
+      "e. Loop Henle"
+    ],
+    answer: 1,
+    explain: "ADH bekerja pada distal tubule bagian akhir dan collecting duct."
+  },
+  {
+    q: "8. Untuk mengurangi keasaman dalam tubuh maka ginjal berperan untuk mengekskresikan unsur di bawah ini [QUIZ]",
+    options: [
+      "a. H2O",
+      "b. NaCl",
+      "c. HCO3-",
+      "d. H+",
+      "e. KCl"
+    ],
+    answer: 3,
+    explain: "Untuk mengurangi keasaman, ginjal mengekskresikan H+."
+  },
+  {
+    q: "9. Proses filtrasi di capsula ginjal berkaitan dengan hal di bawah [2017] Filtration process in renal capsule related to these below option",
+    options: [
+      "a. Akan terjadi apabila pb = (po + pc) (The `ltration occur if pb = (po +pc)) → pb > po + pc",
+      "b. Tetap terjadi, walau tekanan `ltrasi (pf) nol (Filtration process still exist , although `ltration pressure (pf) nol) → 10 mm Hg",
+      "c. Tidak dipengaruhi oleh tekanan darah sistemik (No inWuence by systemic blood pressure)",
+      "d. Terjadi bila tekanan darah di glomerulus (pb) > tekanan osmotic koloid (po) + tekanan hidrostatik kapsula Bowman (pc) (Filtration process occur if blood pressure (pb) > osmotic colloid pressure (po) + Bowman capsule hydrostatic pressure)",
+      "e. Akan berkurang apabila pb > Po (Decrease in `ltration if pb > po)"
+    ],
+    answer: 3,
+    explain: "Filtrasi terjadi bila tekanan darah di glomerulus lebih besar daripada tekanan osmotik koloid dan tekanan hidrostatik kapsula Bowman."
+  },
+  {
+    q: "10.Syaraf penghantar sakit pada ureter sangat baik. Bila terjadi bendungan dalam ureter (misal oleh batu ureter), akan menimbulkan refleks konstriksi akibat dari rasa sakit. Impuls rasa sakit akan menyebabkan refleks saraf simpatis ke ginjal yang menyebabkan vasokonstriksi arteriol ginjal. Keadaan ini berkaitan dengan hal di bawah: [2020] The ureters are well supplied with pain nerve fiber. When a ureter becomes blocked (e.g. by a ureteral stone), intense reflex constriction occurs, associated with severe pain. This pain impulse cause a sympathetic reflex back to the kidney to constrict to the renal arterioles. This condition related to:",
+    options: [
+      "a. Hal ini disebut refleks renouretral (This effect is called the renoureteral reflex)",
+      "b. Hal ini disebut refleks uterorenal (This effect is called the ureterorenal reflex)",
+      "c. Hal ini disebut dengan hidronefrosis (This effect is called hydronephrosis)",
+      "d. Peningkatan pembentukan urine oleh ginjal (Increase urine output from the kidneys)",
+      "e. Otot kantong kencing akan berkonstriksi (Muscles of bladder will constrict/)"
+    ],
+    answer: 1,
+    explain: "Refleks ini disebut ureterorenal reflex."
+  },
+  {
+    q: "1. Hipospadia biasanya terdiri dari yang mana dari komponen berikut? [2020] Hypospadias is typically made up of which of the following components",
+    options: [
+      "a. Ventral penile curvature with an orthotopic urethral meatus/ Kelengkungan penis ventral dengan meatus uretra ortotopik",
+      "b. A high risk of associated anomalies outside of the genitourinary tract/ Risiko tinggi anomali terkait di luar saluran genitourinari",
+      "c. A bifid scrotum/ Skrotum bifid",
+      "d. An intact prepuce/ Sebuah preputium utuh",
+      "e. An ectopic location to the urethral meatus below the center of the glans/ Lokasi ektopik ke meatus uretra di bawah pusat kelenjar"
+    ],
+    answer: 4,
+    explain: "Inget kalo hipospadia → meatus uretranya ada di ventral (dibawah)"
+  },
+  {
+    q: "2. Seorang anak laki-laki berusia 5 tahun sedang mengeluh bahwa penis miliknya melengkung saat ereksi. Selain itu, saat kencing pancarannya tidak dapat lurus. Dari pemeriksaan fisik, ostium uretra eksternum berada pada ventral penis. Diagnosis untuk pasien ini: [2020] A 5-year-old boy is complaining that his penis bends when erect. In addition, when urinating, the emission cannot be straight. From a physical examination, the external urethral ostium is on the ventral side of the penis. Diagnosis for this patient",
+    options: [
+      "a. Paraphimosis",
+      "b. Testicular torsion",
+      "c. Hypospadias",
+      "d. Phimosis",
+      "e. Epispadias"
+    ],
+    answer: 2,
+    explain: "Ostium uretra eksternum di ventral penis menunjukkan hypospadias."
+  },
+  {
+    q: "3. Seorang anak laki-laki berusia 6 bulan datang ke poliklinik diantar ibunya dengan keluhan demam dan rewel sejak kemarin. Menurut ibunya, bila berkemih pancaran urin kecil sehingga menjadi sulit kencing, dan ujung penis menggelembung saat berkemih. Pada pemeriksaan fisik didapatkan BB 10kg, nadi 110 x/mnt, temperatur aksila 37,5. Pemeriksaan genetalia didapatkan preputium penis yang tidak dapat ditarik ke pangkal sampai korona glandis. Apakah diagnosis yang tepat untuk keluhan diatas? [2020] A 6-month-old boy came to the polyclinic accompanied by his mother with complaints of fever and fuss since yesterday. According to his mother, when he urinated, the urine was so small that it became difficult to urinate, and the tip of his penis bulged when he urinated. On physical examination, the weight was 10 kg, the pulse was 110 x/min, and the axillary temperature was 37.5. Examination of the genitalia revealed that the foreskin of the penis could not be retracted to the base until the corona gland. What is the correct diagnosis for the above complaint",
+    options: [
+      "a. Paraphimosis",
+      "b. Peyron's disease",
+      "c. Urethral stricture",
+      "d. Phimosis",
+      "e. Hispopadia"
+    ],
+    answer: 3,
+    explain: "Preputium tidak dapat diretraksi sampai korona glandis menunjukkan phimosis."
+  },
+  {
+    q: "4. Seorang anak laki-laki berusia 3 tahun dibawa ayahnya ke poli urologi dengan keluhan BAK tidak keluar dari ujung penis. Sebenarnya kelainan ini sudah ada sejak lahir tetapi tidak diperiksakan karena masalah biaya. Dari pemeriksaan fisik didapatkan lubang uretra eksternum bermuara pada bagian frenulum. Diagnosis pasien ini? [2020] A 3-year-old boy was brought by his father to the urology clinic with complaints of urination not coming out of the tip of the penis. This abnormality has existed since birth but was not examined because of financial problems. From the physical examination, the external urethral opening opens to the frenulum. Diagnosis of this patient",
+    options: [
+      "a. Hipospadia subcoronalis",
+      "b. Epispadia subcoronalis",
+      "c. Hipospadia penoscrotalis",
+      "d. Hipospadia perineal",
+      "e. Epispadia penoscrotalis"
+    ],
+    answer: 0,
+    explain: "Kalau diliat dari anatomi frenulum, harusnya masuk ke hipospadia sub coronal. Frenulum ada di bagian ventral penis (di bawah) makanya termasuk hipospadia"
+  },
+  {
+    q: "5. Hipospadia tipe penoscrotal yang tidak diperbaiki akan mengakibatkan: [2019]",
+    options: [
+      "a. Tidak mampu membuahi saat hubungan seksual",
+      "b. Stenosis meatus uretra eksterna yang signifikan",
+      "c. Kesulitan buang air kecil",
+      "d. Disfungsi ereksi (impotencia)",
+      "e. Kelebihan kulit preputium pada sisi dorsal"
+    ],
+    answer: 0,
+    explain: "Hipospadia penoscrotal yang tidak diperbaiki dapat mengganggu deposisi semen saat hubungan seksual."
+  },
+  {
+    q: "6. Pertanyaan yang benar tentang hipospadia adalah: [2017][2018]",
+    options: [
+      "a. Meatus uretra paling sering terletak di penile dan sub coronal → di ventral",
+      "b. Preputium yang kurang berkembang disertai kurvatura penis kearah dorsal",
+      "c. Dapat disertai satu atau lebih anomaly diluar traktus genitourinaria",
+      "d. Tidak pernah terjadi pada wanita",
+      "e. Selalu disertai chorde dengan derajat kurvatura bervariasi"
+    ],
+    answer: 0,
+    explain: "Hipospadia paling sering terletak distal, yaitu penile dan subcoronal, pada sisi ventral."
+  },
+  {
+    q: "7. Pernyataan yang benar tentang hipospadia adalah: [2019]",
+    options: [
+      "a. Dapat disertai satu atau lebih anomali diluar traktus genitourinaria",
+      "b. Tidak pernah terjadi pada wanita",
+      "c. Preputium yang kurang berkembang disisi dorsal",
+      "d. Meatus uretra terletak di sisi dorsal dari penis",
+      "e. Meatus uretra paling seringk terletak di penoscrotal"
+    ],
+    answer: 0,
+    explain: "Opsi A → anomali yg terjadi di dalam traktus genitourinary (meatus uretra) dan di luar traktus genitourinary (ventral curvature & foreskin distribution)\nOpsi B → jarang sekali terjadi pada wanita, tp bisa terjadi\nOpsi C → harusnya sisi ventral\nOpsi D → harunya di ventral\nOpsi E → penoscrotal (proksimal), lebih sering terjadi di distal"
+  },
+  {
+    q: "8. Kontra indikasi sirkumsisi [2017][2018]",
+    options: [
+      "a. Uretritis gonorea",
+      "b. Balanitis dan atau balanophostitis",
+      "c. Infeksi saluran kemih berulang",
+      "d. Hipospadi",
+      "e. Fimosis"
+    ],
+    answer: 3,
+    explain: "Hipospadia merupakan kontraindikasi sirkumsisi."
+  },
+  {
+    q: "9. Kontra indikasi sirkumsisi: [2019]",
+    options: [
+      "a. Parafimosis yang berkepanjangan",
+      "b. Uretritis gonore akut",
+      "c. Fimosis",
+      "d. Balanophostitis Xerotico Obliterans",
+      "e. Buried penis (concealed penis) → anomali penis, hipospadia"
+    ],
+    answer: 4,
+    explain: "Buried penis (concealed penis) termasuk kontraindikasi sirkumsisi."
+  },
+  {
+    q: "10.Anak laki-laki usia 3 tahun datang ke tempat praktek saudara dikeluhkan oleh orangtuanya karena nyeri pada saat buang air kecil sejak 4 hari terakhir. Setiap buang air kecil selalu menangis, Dua hari terakhir, kulit preputium tertarik ke belakang sehingga glans penis anak ini tampak jelas disertai dengan pembengkakan pada kulit ujung penis. Pasien belum pernah sirkumsisi. Pada pemeriksaan fisik didapatkan preputium bengkak dan terdapat bagian yang mengalami nekrosis. Apa kemungkinan diagnosis pada pasien ini? [2019]",
+    options: [
+      "a. Priapismus",
+      "b. Striktur uretra",
+      "c. Paraphimosis",
+      "d. Peyronie",
+      "e. Phimosis"
+    ],
+    answer: 2,
+    explain: "Preputium tertarik ke belakang dengan pembengkakan dan nekrosis menunjukkan paraphimosis."
+  },
+  {
+    q: "11.Anak laki-laki usia 3 tahun datang ke tempat praktek saudara dikeluhkan oleh orang tuanya karena nyeri pada saat buang air kecil sejak 4 hari terakhir. Setiap buang air kecil selalu menangis sehingga anak ini cenderung menahan kencingnya. Keluhan ini juga disertai dengan pembengkakan berulang pada kulit ujung penis. Pasien belum pernah sirkumsisi. Pada pemeriksaan fisik didapatkan preputium agak bengkak dan tidak bisa diretraksi ke proksimal. Apa kemungkinan diagnosis pada pasien ini? [2018]",
+    options: [
+      "a. Phimosis",
+      "b. Priapismus",
+      "c. Striktur uretra",
+      "d. Paraphimosis",
+      "e. Peyronie"
+    ],
+    answer: 0,
+    explain: "Preputium tidak bisa diretraksi ke proksimal menunjukkan phimosis."
+  },
+  {
+    q: "12.Anak laki-laki 8 tahun tidak mampu retraksi preputium. Terdapat riwayat balanitis dan infeksi saluran kemih berulang. Semua penanganan tersebut dibawah adalah benar, kecuali: [2018]",
+    options: [
+      "a. Preputioplasty (dorsal slit)",
+      "b. Aplikasi krim korticosteroid topikal",
+      "c. Retraksi preputium secara gentle dan teratur",
+      "d. Dilatasi preputium secara tumpul dengan klem",
+      "e. Sirkumsisi"
+    ],
+    answer: 3,
+    explain: "Gold standard phimosis adalah sirkumsisi, dorsal slit juga bisa dilakukan\nPasien memiliki riwayat balanitis (infeksi pada glans penis), terapinya sama kayak balanopostitis (infeksi pada glans penis + preputium), bisa diberikan aplikasi krim topikal."
+  },
+  {
+    q: "1. Gambaran klinikopatologi glomerulopati yang sesuai untuk Minimal Change Disease: [QUIZ]",
+    options: [
+      "a. Ditandai dengan sindroma nefritik → sindrom nefrotik",
+      "b. Tidak responsif terhadap steroid",
+      "c. Tampak deposit kompleks antigen-antibodi pada glomerulus dan tubulus ginjal → immunofluorescence negatif",
+      "d. Tidak tampak perubahan morfologi glomerulus dengan mikroskop cahaya",
+      "e. Lebih sering terjadi pada usia dewasa → pada anak-anak"
+    ],
+    answer: 3,
+    explain: "Minimal Change Disease tidak tampak perubahan morfologi glomerulus dengan mikroskop cahaya."
+  },
+  {
+    q: "2. Kuman penyebab tersering pyelonephritis akut adalah: [QUIZ]",
+    options: [
+      "a. Proteus",
+      "b. Klebsiela",
+      "c. Escherichia coli",
+      "d. Pseudomonas",
+      "e. Enterobacter"
+    ],
+    answer: 2,
+    explain: "Kuman tersering penyebab pyelonephritis akut adalah Escherichia coli."
+  },
+  {
+    q: "3. Pada penderita penyakit jantung iskemik dapat terjadi gagal ginjal akut. Mekanismenya: [QUIZ]",
+    options: [
+      "a. Nekrosis tubuler akut",
+      "b. Reaksi anafilaktik karena obat jantung → NSAID yang menyebabkan kerusakan tubular",
+      "c. Glomerulonefritis akut → mekanisme imun terbentuk antigen-antibodi complemen",
+      "d. Pyelonefritis akut → infeksi bakteri hematogen pelvic dan calix dari lower urinary track",
+      "e. Nefritis interstitialis"
+    ],
+    answer: 0,
+    explain: "Pada penyakit jantung iskemik dapat terjadi gagal ginjal akut melalui nekrosis tubuler akut."
+  },
+  {
+    q: "4. Proteinuria pada glomerulonephritis terjadi karena adanya kerusakan pada: [2018] Proteinuria in glomerulonephritis occurs due to damage of:",
+    options: [
+      "a. Juxtaglomerular apparatus",
+      "b. Glomerular filtration barrier",
+      "c. Tubulus nephron",
+      "d. Glomerulus and nephron",
+      "e. Glomerular mesangial cell"
+    ],
+    answer: 1,
+    explain: "Normalnya protein gada di dalam urin. Protein itu muatan negatif dimana akan bertolak belakang dengan podosit (barrier) karena negatif juga. Kalau podosit rusak, protein bisa masuk ke urin, jadi proteinuria deh"
+  },
+  {
+    q: "5. Perubahan morfologi apakah yang terjadi pada acute tubular injury? [2017][2018] What morphological changes occur in acute tubular injury?",
+    options: [
+      "a. Nekrosis dan degenerasi epitel tubuli/Necrosis and degeneration of tubular epithelium",
+      "b. Atrofi epitel tubuli/Atrophy of tubular epithelium",
+      "c. Infiltrasi neutrofil pada lumen tubuli/Neutrophils infiltrate in tubular lumen",
+      "d. Koloidisasi pada lumen tubuli/Tubular colloidization",
+      "e. Fibrosis peritubular/Peritubular fibrosis"
+    ],
+    answer: 0,
+    explain: "Perubahan morfologi acute tubular injury adalah nekrosis dan degenerasi epitel tubuli."
+  },
+  {
+    q: "6. Seorang wanita usia 25 tahun didiagnosis SLE sejak 5 tahun lalu. Beberapa hari ini, kedua kelopak mata dan ekstremitasnya bengkak akibat edema. Test urinalisis menunjukkan proteinuria, pada hematuria maupun bacteriuria. Selanjutnya dilakukan biopsi ginjal dengan gambaran penebalan membran basal glomerulus. Mekanisme yang mendasari terjadinya lesi glomerulus pada kasus in? [2019] A 25-year-old woman was diagnosed with SLE five-years ago. For the past few days, both his eyelids and extremities were swollen from edema. Urinalysis test showed proteinuria, without hematuria or bacteriuria. A kidney biopsy was performed which showed thickening of the glomerular basement membrane. What is the most likely mechanism underlying the occurrence of glomerular lesions in this case?",
+    options: [
+      "a. Complement alternative pathway",
+      "b. Maladaptive changes",
+      "c. Antibody mediated injury",
+      "d. Cell mediated injury",
+      "e. Podocytopathy"
+    ],
+    answer: 2,
+    explain: "Pada SLE dengan penebalan membran basal glomerulus, mekanismenya adalah antibody mediated injury."
+  },
+  {
+    q: "7. Glomerulonefritis manakah berikut ini yang terjadi akibat deposit imun kompleks dari sirkulasi? [2017] Which of the following glomerulonephritis below is due to deposition of circulating immune complex?",
+    options: [
+      "a. Crescentic glomerulonephritis/Crescentic glomerulonephritis → imun complex linear berarti in situ",
+      "b. Focal segmental glomerulonephritis/Focal segmental glomerulonephritis → no imun complex",
+      "c. Membranous nephropathy/Membranous nephropathy",
+      "d. Minimal change disease/Minimal change disease → no deposit imun",
+      "e. Acute Post Streptococcal Glomerulonephritis/Acute Post StreptococcalGlomerulonephritis → imun complex granular berarti circulating"
+    ],
+    answer: 4,
+    explain: "Acute Post Streptococcal Glomerulonephritis terjadi akibat deposit imun kompleks dari sirkulasi."
+  },
+  {
+    q: "8. Seorang laki-laki usia 25 tahun mengalami kecelakaan lalu lintas yang menyebabkan cedera otot paha dan betis yang parah. Tiga hari setelah kecelakaan, penderita mengalami oliguria dengan urine berwarna coklat gelap disertai peningkatan kadar BUN dan serum kreatinin. Dari test dipstick urine terdeteksi myoglobin positif. Pada urinalisis, eritrosit negatif. Setelah menjalani 3x hemodialisis, fungsi ginjal pasien berangsur membaik. Lesi ginjal yang terjadi pada penderita in? [2019] A 25-year-old man was involved in a traffic accident which resulted in severe thigh and calf muscle injury. Three days after the accident, the patient developed oliguria with durk brown urine accompanied by an increase in BUN and serum creatinine levels. The urine dipstick test detected positive myoglobin. On urinalysis, the erythrocyte was negative. After undergoing 3x hemodialysis, the patient's kidney function gradually improved. What kidney lesion is most likely to occur in this patient",
+    options: [
+      "a. Malignant nephrosclerosis/ Malignant nephrosclerosis",
+      "b. Trombosis vena renalis / Renal vein thrombosis → kalo arteri renalis mungkin",
+      "c. Acute tubular injury / Acute tubular injury → akibat syok hipovolemik",
+      "d. Pyelonephritis akut / Acute pyelonephritis",
+      "e. Rapidly prograssive GN/ Rapidly progressive GN"
+    ],
+    answer: 2,
+    explain: "Cedera otot berat dengan myoglobinuria paling sesuai dengan acute tubular injury."
+  },
+  {
+    q: "9. Seorang wanita umur 38 tahun mengeluh letargi sejak 4 bulan lalu. Pada pemeriksaan fisik, suhu tubuh afebril dan tekanan darah 140/80 mmHg. Pemeriksaan laboratorium menunjukkan kadar kreatinin serum 5,8 mg/dL. Faktor nefritik C3 positif dalam serum, mengakibatkan hipokomplementemia. Test ANA negatif. Urinalisis menunjukkan darah +2 dan protein +2. Biopsi ginjal menunjukkan glomeruli hiperseluler, konfigurasi lobuler, dan deposit intramembran yang menghasilkan gambaran double contour. Tipe glomerulonefritis apakah yang paling mungkin terjadi pada kasus ini: [2020] A 38-year-old woman has been feeling lethargic for 4 months. On physical examination, she is afebrile, and her blood pressure is 140/80 mm Hg. Laboratory findings show the serum creatinine level is 5.8 mg/dL. C3 factor is present in serum, resulting in hypocomplementemia, and the ANA test result is negative. Urinalysis shows 2+ blood and 2+ protein. A renal biopsy shows hypercellular glomeruli, lobular configuration, and prominent intramembranous deposits resulting double contour appearance. Which of the following forms of glomerulonephritis is most likely to be present in this patient?",
+    options: [
+      "a. Rapidly progressive glomerulonephritis",
+      "b. Diffuse proliferative glomerulonephritis",
+      "c. Membranoproliferative Glomerulonephritis",
+      "d. Membranous nephropathy",
+      "e. Glomerulonefritis kronis"
+    ],
+    answer: 2,
+    explain: "Gambaran double contour dengan deposit intramembran paling sesuai dengan Membranoproliferative Glomerulonephritis."
+  },
+  {
+    q: "1. Yang mana dari segmen-segmen di bawah ini yang bukan merupakan segementum renis? [QUIZ]",
+    options: [
+      "a. Segmentum medialis renis",
+      "b. Segmentum anterius inferius renis",
+      "c. Segmentum anterius superius renis",
+      "d. Segmentum posterius renis",
+      "e. Segmentum superius renis"
+    ],
+    answer: 0,
+    explain: "Segmentum medialis renis bukan merupakan segmentum renis."
+  },
+  {
+    q: "2. Yang mana dari struktur berikut yang mungkin ikut terbuang saat dilakukan operasi TURP (Transurethral Resection of the Prostat)? [QUIZ]",
+    options: [
+      "a. Ductus vesica seminalis → menghasilkan cairan yang mengandung fruktosa",
+      "b. Glandula bulbo-eurethralis → menghasilkan sekret yang membersihkan saluran uretra",
+      "c. Ductus deferens",
+      "d. Fossa navicularis",
+      "e. Ductus ejaculatorius"
+    ],
+    answer: 4,
+    explain: "Struktur yang mungkin ikut terbuang saat TURP adalah ductus ejaculatorius."
+  },
+  {
+    q: "3. Kemana vena testicularis sinister akan mengalirkan darah balik dari testis sinister? [QUIZ]",
+    options: [
+      "a. Vena iliaca externa",
+      "b. Vena cava inferior",
+      "c. Vena iliaca interna → dari common pudendal vein",
+      "d. Vena rectalis inferior",
+      "e. Vena renalis sinister"
+    ],
+    answer: 4,
+    explain: "Testis & Epididimis → berkumpul di pampiniform plexus → menuju vena spermatic internal → vena renalis sinistra (testis kiri) atau inferior vena cava (testis kanan)"
+  },
+  {
+    q: "4. Nama-nama struktur: 1) Dua cabang arteri renalis 2) Cabang ketiga dari arteria renalis 3) Vena renalis 4) Pelvis renalis Yang mana urutan struktur-struktur di atas yang benar saat ditemukan di sinus renalis dari anterior ke posterior? [QUIZ]",
+    options: [
+      "a. 4,3,2,1",
+      "b. 1,3,2,4",
+      "c. 3,4,1,2",
+      "d. 3,1,4,2",
+      "e. 1,2,3,4"
+    ],
+    answer: 3,
+    explain: "Anterior → posterior\n◦ Vena renalis → dua cabang arteri renalis → pelvis renalis → cabang ketiga arteri renalis"
+  },
+  {
+    q: "5. Yang mana dari pernyataan berikut yang sesuai untuk vesica urinaria? [2020] [QUIZ]",
+    options: [
+      "a. Corpus vesicae adalah bagian antara apex dengan basis vesicae → antara vertex dan fundus",
+      "b. Terletak di posterior dari ossa pubis oleh celah postesial yang disebut spatium retropubicum",
+      "c. Mampu menampung urin berkisar 1500 ml – harusnya 150 cc / 150 ml",
+      "d. Memiliki bagian apex vesicae, fundus vesicae, basis vesicae, dan corpus vesicae – apex, body, fundus (base), uvula, neck",
+      "e. Memiliki empat facies: dua facies inferolateral, facies superior, dan facies anterior – harusnya posterior, bukan anterior"
+    ],
+    answer: 1,
+    explain: "Vesica urinaria terletak di posterior ossa pubis dan dipisahkan oleh spatium retropubicum."
+  },
+  {
+    q: "6. Yang mana dari struktur-struktur di bawah ini yang tidak membentuk nephron? [QUIZ]",
+    options: [
+      "a. Glomerulus",
+      "b. Tubulus renalis colligens",
+      "c. Tubulus proximalis",
+      "d. Capsula Bowman",
+      "e. Tubulus distalis"
+    ],
+    answer: 1,
+    explain: "Tubulus renalis colligens tidak membentuk nephron."
+  },
+  {
+    q: "7. Yang mana dari lobulus prostat berikut yang teraba jika membesar saat pemeriksaan rectal touche? [QUIZ][2020]",
+    options: [
+      "a. Lobulus inferolateral",
+      "b. Lobulus anterior",
+      "c. Lobulus anteromedial",
+      "d. Lobulus superomedial",
+      "e. Lobulus inferoposterior"
+    ],
+    answer: 4,
+    explain: "Jika pada pemeriksaan Rectal touche yang terabada dan sering ada permasalahan adalah lobus posterior – inferior posterior"
+  },
+  {
+    q: "8. Yang mana dari arteriae berikut ini tidak memberikan vaskularisasi untuk ureter? [2020][QUIZ]",
+    options: [
+      "a. Arteria rectalis superior",
+      "b. Arteria iliaca interna → pelvis part ureter",
+      "c. Arteria gonadalis → middle part",
+      "d. Arteria vesica superior",
+      "e. Arteria common iliaca → pelvis part ureter"
+    ],
+    answer: 0,
+    explain: "Arteria rectalis superior tidak termasuk vaskularisasi utama ureter pada pembagian ini."
+  },
+  {
+    q: "9. Yang mana pernyataan berikut sesuai untuk vaskularisasi ren? [QUIZ]",
+    options: [
+      "a. Arteriol afferen dari glomerulus terutama adalah cabang dari arteriae innterlobulares rami laterales",
+      "b. Arteria renalis sinister lebih panjang dari dexter → lebih panjang yang sinister",
+      "c. Masing-masing areteriae renalis akan bercabang menjadi empat arteriae segmentales → 5 arteri segmentalis : superior/apical, anteroposterior, anteroinferior, posterior, inferior",
+      "d. Cabang dari arteriae arcuatae adalah arteriae interlobares → harusnya arteri interlobularis",
+      "e. Arteriae renales yang merupakan cabang aorta letaknya setinggi CV L3 → L1-L2"
+    ],
+    answer: 0,
+    explain: "Arteri renalis → bercabang menjadi 5 segmen arteri → arteri interlobaris → arteri akuarta → arteri interlobularis → arteri aferen"
+  },
+  {
+    q: "10.Bagaimana arah posisi ren secara longitudinal? [QUIZ]",
+    options: [
+      "a. Infero-medial",
+      "b. Postero-medial",
+      "c. Infero-lateral",
+      "d. Supero-medial",
+      "e. Antero-medial"
+    ],
+    answer: 2,
+    explain: "• Transversal : retroperitoneal → postero-medial\n• Longitudinal : infero-lateral → dibawah diafragma, ke arah sisi tubuh"
+  },
+  {
+    q: "11.Bagaimana arah posisi ren secara transversal? [2020] How is the direction of the ren position transversely?",
+    options: [
+      "a. Infero-lateral",
+      "b. Antero-medial",
+      "c. Supero-medial",
+      "d. Postero-medial",
+      "e. Infero-medial"
+    ],
+    answer: 3,
+    explain: "• Transversal : retroperitoneal → postero-medial\n• Longitudinal : infero-lateral → dibawah diafragma, ke arah sisi tubuh"
+  },
+  {
+    q: "12.Apa nama ligamentum yang memegang kuat cervix vesicae pada laki-laki? [QUIZ][2020]",
+    options: [
+      "a. Ligamentum umbilicalis mediana",
+      "b. Ligamentum pubovesicalis",
+      "c. Ligamentum pubomedia",
+      "d. Ligamentum teres mediana",
+      "e. Ligamentum puboprostaticum"
+    ],
+    answer: 4,
+    explain: "Ligamentum yang memegang kuat cervix vesicae pada laki-laki adalah ligamentum puboprostaticum."
+  },
+  {
+    q: "13. Yang mana dari arteria berikut cabangnya memberikan vaskularisasi untuk bagian superior dari vesica urinaria? [QUIZ]",
+    options: [
+      "a. Obturatoar",
+      "b. Uterina",
+      "c. Vesicalis superior",
+      "d. Rectalis medius",
+      "e. Gluteus inferior"
+    ],
+    answer: 2,
+    explain: "Bagian superior vesica urinaria diperdarahi cabang arteria vesicalis superior."
+  },
+  {
+    q: "14.Apa yang terjadi jika nervus hypogastricus di vesica urinaria distimulasi? [QUIZ]",
+    options: [
+      "a. Motor terhadap sphincter internal dan inhibisi terhadap m. detrusor",
+      "b. Motor terhadap m. detrusor dan inhibisi terhadap sphincter internal",
+      "c. Inhibisi terhadap sphincter urethra externa dan motor terhadap m. detrusor",
+      "d. Inhibisi terhadap sphincter urethra externa",
+      "e. Motor terhadap sphincter urethra externa dan inhibisi terhadap m. detrusor"
+    ],
+    answer: 0,
+    explain: "• Simpatis : dari hypogastricus → sasarannya sphincter interna → menahan kencing\n◦ Mengatur somatic : kontraksi sphincter eksterna\n• Parasimpatis : nervus splanikus → menyebabkan kencing\n◦ motorik : kontraksi m. detrusor\n◦ sphincter interna relaksasi"
+  },
+  {
+    q: "15. Pernyataan tentang vesica urinaria berikut ini benar: [2019]",
+    options: [
+      "a. Terletak subperitoneal",
+      "b. Kedua ureter bermuara di bagian superiornya",
+      "c. Urethra keluar dari dinding posteriornya",
+      "d. Dindingnya terdiri dari otot bergaris mucosa transitional epithel",
+      "e. Seluruh bagiannya diliputi peritoneum"
+    ],
+    answer: 0,
+    explain: "Vesica urinaria terletak subperitoneal."
+  },
+  {
+    q: "16. Mana bagian dari urethra laki-laki yang paling pendek? [QUIZ]",
+    options: [
+      "a. Pars intramuralis",
+      "b. Pars prostatica",
+      "c. Pars intermedia",
+      "d. Pars spongiosa",
+      "e. Pars membranacea"
+    ],
+    answer: 0,
+    explain: "• Pre Prostatica / intramularis : paling pendek → 1-1.5 cm\n• Pars prostatika : paling lebar : 3-4 cm"
+  },
+  {
+    q: "17.Apa yang terjadi jika nervus splanchnicus pelvicus di vesica urinaria distimulasi? [QUIZ]",
+    options: [
+      "a. Motor terhadap m. detrusor dan inhibisi terhadap sphincter internal",
+      "b. Inhibisi terhadap sphincter urethra externa dan motor terhadap m. detrusor",
+      "c. Motor terhadap sphincter urethra externa dan inhibisi terhadap m. detrusor",
+      "d. Inhibisi terhadap sphincter urethra externa",
+      "e. Motor terhadap sphincter internal dan inhibisi terhadap m. detrusor"
+    ],
+    answer: 0,
+    explain: "• Simpatis : dari hypogastricus → sasarannya sphincter interna → menahan kencing\n◦ Mengatur somatic : kontraksi sphincter eksterna\n◦ T12, L1, L2\n• Parasimpatis : nervus splanikus → menyebabkan kencing\n◦ motorik : kontraksi m. detrusor\n◦ menghambat sphincter interna → relaksasi\n◦ S2, S3, S4"
+  },
+  {
+    q: "18. Yang mana dari pernyataan berikut sesuai untuk struktur-struktur yang membungkus dan memfiksasi ren di dinding posterior abdomen? [QUIZ]",
+    options: [
+      "a. Pararenal fat letaknya di dalam fascia renalis",
+      "b. Fascia renalis membungkus capsula fibrosa renis",
+      "c. Kedua fascia renalis menyatu di inferior menjadi fascia transversalis",
+      "d. Perirenal fat letaknya di luar fascia renalis",
+      "e. Fascia renalis membungkus ren di posisi superior, lateral, dan medial"
+    ],
+    answer: 4,
+    explain: "Fascia renalis membungkus ren di posisi superior, lateral, dan medial."
+  },
+  {
+    q: "19. Dari segmen medula spinalis ke berapa nervus splanchnicus pelvis yang memberikan inervasi untuk vesica urinaria berasal? [QUIZ]",
+    options: [
+      "a. T10-L02",
+      "b. L01-L02",
+      "c. T10-T12",
+      "d. S01-S04",
+      "e. S02-S04"
+    ],
+    answer: 4,
+    explain: "• Nervus splanchnicus : saraf parasimpatis"
+  },
+  {
+    q: "20. Yang mana dari struktur-struktur berikut ini yang tidak membentuk batas-batas dari trigonum vesicae? [QUIZ]",
+    options: [
+      "a. Orificium uretericus dexter",
+      "b. Crista interuretericus",
+      "c. Orificium uretericus sinister",
+      "d. Urachus",
+      "e. Orificium urethralis"
+    ],
+    answer: 3,
+    explain: "Urachus tidak membentuk batas trigonum vesicae."
+  },
+  {
+    q: "21. Yang mana dari zona prostat berikut kemungkinan mengganggu aliran urin pada kasus BPH (Benign Prostat Hyperplasia)? [QUIZ]",
+    options: [
+      "a. Zona medialis prostata",
+      "b. Zona transitional (periurethral) prostata",
+      "c. Zona muscularis anterior prostata",
+      "d. Zona centralis prostata",
+      "e. Zona periperalis prostata → prostat cancer"
+    ],
+    answer: 1,
+    explain: "BPH terutama mengenai zona transitional (periurethral) prostata."
+  },
+  {
+    q: "22. Yang mana dari pernyataan berikut sesuai untuk ren? [QUIZ]",
+    options: [
+      "a. Memiliki margo medialis yang konkaf dan margo lateralis yang konvek",
+      "b. Di polus inferiornya terdapat glandula suprarenalis",
+      "c. Ren dexter letaknya lebih tinggi daripada sinister",
+      "d. Letaknya setinggi CV T11-L4",
+      "e. Panjangnya 8-10 cm, lebar 4-6 cm, dan tebalnya 5 cm"
+    ],
+    answer: 0,
+    explain: "Ren memiliki margo medialis yang konkaf dan margo lateralis yang konveks."
+  },
+  {
+    q: "23. Yang mana pernyataan berikut sesuai untuk ren? [2020] Which one of these statements correct for kidney?",
+    options: [
+      "a. Ren sinister letaknya lebih rendah dari dexter (Left kidney is lower than right kidney) → dextra lebih rendah karena ada hepar",
+      "b. Memiliki margo lateralis yang konkaf dan margo medialis yang konvek (It has a concave lateral margin and a convex medial margin) → lateral convex, medial concav",
+      "c. Panjangnya 9-11 cm, lebar 4-6 cm, tebalnya 4 cm (Length 9-11 cm, width 4-6 cm, thickness 4 cm) → panjang 10 cm, lebar 4 cm, tebal 2,5 cm",
+      "d. Letaknya setinggi CV T12-L3 (It is located as high as CV T12-L3)",
+      "e. Di polus superiornya terdapat glandula pararenalis (On the superior pole are the pararenal glands) → retroperitoneal"
+    ],
+    answer: 3,
+    explain: "Ginjal terletak setinggi CV T12-L3."
+  },
+  {
+    q: "24. Gambar di bawah menunjukkan isi dari spermatic cord. Yang mana dari struktur-struktur di bawah ini tidak terdapat dalam spermatic cord? [2020] The image below shows the contents of the spermatic cord. Which of the following structures is not present in the spermatic cord?",
+    options: [
+      "a. Nervus ilioinguinalis ramus genitalis → inervasi penis",
+      "b. Vas deferens",
+      "c. Vena testicularis",
+      "d. Arteria testicularis",
+      "e. Nervus genitofemoralis ramus genitalis"
+    ],
+    answer: 0,
+    explain: "Nervus genitofemoralis ramus genitalis terdapat dalam spermatic cord, sedangkan nervus ilioinguinalis tidak termasuk isi spermatic cord."
+  },
+  {
+    q: "25. Yang mana bagian dari urethra laki-laki yang paling lebar? [2020] Which part of the male urethra is the widest?",
+    options: [
+      "a. Pars spongiosa",
+      "b. Pars prostatica",
+      "c. Pars membranacea",
+      "d. Pars intermedia",
+      "e. Pars intramuralis → bagian yang paling pendek"
+    ],
+    answer: 1,
+    explain: "• Pars Pre-Prostatica / intramularis : paling pendek → 1-1.5 cm\n• Pars prostatika : paling lebar : 3-4 cm"
+  },
+  {
+    q: "26.Seorang pria muda mengajak teman ceweknya yang mengeluhkan nyeri saat kencing. Setelah anamnesis dan prosedur pemeriksaan dilakukan dokter menyimpulkan sebagai \"honeymoon cystitis\". Darah arteri yang akan disaring menjadi urine berjalan melalui [2019] 1. A. segmentalis, 2. A. interlobularis, 3. A. Interlobaris, 4. A arcuata, 5. A. afferent. Urutannya adalah sebagai berikut",
+    options: [
+      "a. 1-4-3-5-2",
+      "b. 1-2-4-3-5",
+      "c. 1-3-5-4-2",
+      "d. 1-2-3-4-5",
+      "e. 1-3-4-2-5"
+    ],
+    answer: 4,
+    explain: "• Arteri renalis → 5 arteri segmentalis → arteri interlobaris → arteri arkuata → arteri interlobular → arteri afferen"
+  }
+    ];
+
+    let current = 0;
+    let currentOptions = [];
+    let score = 0;
+    let answered = false;
+    let timeLeft = 80 * 60;
+    let timerInterval = null;
+
+    const homeEl = document.getElementById("home");
+    const quizEl = document.getElementById("quizContainer");
+    const metaEl = document.getElementById("meta");
+    const scoreInfoEl = document.getElementById("scoreInfo");
+    const timerInfoEl = document.getElementById("timerInfo");
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const explainEl = document.getElementById("explain");
+    const startBtn = document.getElementById("startBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const backBtn = document.getElementById("backBtn");
+
+    const userAnswers = Array(questions.length).fill(null);
+
+    startBtn.addEventListener("click", startQuiz);
+    nextBtn.addEventListener("click", nextQuestion);
+    backBtn.addEventListener("click", prevQuestion);
+
+    function startQuiz() {
+      homeEl.style.display = "none";
+      quizEl.style.display = "block";
+      current = 0;
+      score = 0;
+      answered = false;
+      timeLeft = 80 * 60;
+      userAnswers.fill(null);
+      startTimer();
+      loadQuestion();
+    }
+
+    function startTimer() {
+      clearInterval(timerInterval);
+      updateTimerDisplay();
+
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        updateTimerDisplay();
+
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          finishQuiz();
+        }
+      }, 1000);
+    }
+
+    function updateTimerDisplay() {
+      const minutes = String(Math.floor(timeLeft / 60)).padStart(2, "0");
+      const seconds = String(timeLeft % 60).padStart(2, "0");
+      timerInfoEl.innerText = "Timer: " + minutes + ":" + seconds;
+    }
+
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+
+    function recalculateScore() {
+      score = userAnswers.reduce((total, answer, index) => {
+        return total + (answer === questions[index].answer ? 1 : 0);
+      }, 0);
+
+      scoreInfoEl.innerText = "Score: " + score;
+    }
+
+    function cleanOptionText(text) {
+      return text.replace(/^[a-e]\.\s*/i, "");
+    }
+
+    function loadQuestion() {
+      answered = userAnswers[current] !== null;
+      explainEl.style.display = "none";
+      explainEl.innerText = "";
+
+      const q = questions[current];
+      metaEl.innerText = "Soal " + (current + 1) + " / " + questions.length;
+      questionEl.innerText = q.q;
+
+      currentOptions = q.options.map((opt, i) => ({
+        text: opt,
+        isCorrect: i === q.answer,
+        originalIndex: i
+      }));
+
+      shuffleArray(currentOptions);
+
+      optionsEl.innerHTML = currentOptions.map((opt, i) => `
+        <label>
+          <input type="radio" name="opt" data-index="${i}">
+          ${String.fromCharCode(65 + i)}. ${cleanOptionText(opt.text)}
+        </label>
+      `).join("");
+
+      const radios = optionsEl.querySelectorAll('input[name="opt"]');
+      const labels = optionsEl.querySelectorAll("label");
+      const savedAnswer = userAnswers[current];
+
+      radios.forEach((radio) => {
+        radio.addEventListener("change", function () {
+          check(parseInt(this.dataset.index, 10));
+        });
+      });
+
+      if (savedAnswer !== null) {
+        const selectedIndex = currentOptions.findIndex(
+          (opt) => opt.originalIndex === savedAnswer
+        );
+
+        if (selectedIndex !== -1) {
+          radios[selectedIndex].checked = true;
+
+          labels.forEach((label, index) => {
+            const input = label.querySelector("input");
+            input.disabled = true;
+
+            if (currentOptions[index].isCorrect) {
+              label.classList.add("correct");
+            }
+
+            if (index === selectedIndex && !currentOptions[index].isCorrect) {
+              label.classList.add("wrong");
+            }
+          });
+
+          explainEl.style.display = "block";
+          explainEl.innerText = "Penjelasan: " + questions[current].explain;
+        }
+      }
+
+      backBtn.disabled = current === 0;
+      backBtn.style.opacity = current === 0 ? "0.6" : "1";
+
+      recalculateScore();
+    }
+
+    function check(i) {
+      const labels = optionsEl.querySelectorAll("label");
+      const chosenOriginalIndex = currentOptions[i].originalIndex;
+
+      const previousAnswer = userAnswers[current];
+      userAnswers[current] = chosenOriginalIndex;
+      answered = true;
+
+      labels.forEach((label) => {
+        label.classList.remove("correct", "wrong");
+      });
+
+      labels.forEach((label, index) => {
+        const input = label.querySelector("input");
+        input.disabled = true;
+
+        if (currentOptions[index].isCorrect) {
+          label.classList.add("correct");
+        }
+
+        if (index === i && !currentOptions[index].isCorrect) {
+          label.classList.add("wrong");
+        }
+      });
+
+      if (previousAnswer === null || previousAnswer !== chosenOriginalIndex) {
+        recalculateScore();
+      }
+
+      explainEl.style.display = "block";
+      explainEl.innerText = "Penjelasan: " + questions[current].explain;
+    }
+
+    function prevQuestion() {
+      if (current > 0) {
+        current--;
+        loadQuestion();
+      }
+    }
+
+    function nextQuestion() {
+      if (!answered) return;
+
+      current++;
+
+      if (current < questions.length) {
+        loadQuestion();
+      } else {
+        finishQuiz();
+      }
+    }
+
+    function finishQuiz() {
+      clearInterval(timerInterval);
+      recalculateScore();
+
+      document.body.innerHTML = `
+        <div class="container result">
+          <div class="result-box">
+            <div class="badge">Quiz Selesai</div>
+            <h2>Hasil Akhir</h2>
+            <div class="score-number">${score}/${questions.length}</div>
+            <p>Semoga CBT juga lancar ya! Exc33ding A!</p>
+            <button class="restart-btn" type="button" onclick="location.reload()">Restart</button>
+          </div>
+        </div>
+      `;
+    }
+  </script>
+</body>
+</html>
+
+
+
+
